@@ -59,6 +59,9 @@ router.get('/', async (req, res) => {
 
 router.post('/', tokenExtractor, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id)
+  if (req.body.year > new Date().getFullYear()) {
+    res.status(400).json({error: 'can not give year parameter higher than current year'})
+  }
   const blog = await Blog.create({...req.body, userId: user.id})
   return res.json(blog)
 })

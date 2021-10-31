@@ -16,9 +16,9 @@ app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/authors', authorsRouter)
 
-const errorHandler = (err, _req, resp, next) => {
+const errorHandler = (err, _req, res, next) => {
   if (err instanceof ValidationError) {
-    resp.json({error: err.errors[0].message})
+    res.json({error: err.errors[0].message})
   }
 
   next(err)
