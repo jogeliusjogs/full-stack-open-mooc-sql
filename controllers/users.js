@@ -12,13 +12,19 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
+  const useReadFilter = req.query.read != null
+  let readFilterWhere = {}
+  if (useReadFilter) {
+    readFilterWhere = {isRead: req.query.read}
+  }
   const user = await User.findOne({
     include: {
       model: Blog,
       as: 'readings',
       through: {
-        attributes: ['id', 'isRead']
-      }
+        attributes: ['id', 'isRead'],
+        where: readFilterWhere
+      },
     },
     where: { 
       id: req.params.id

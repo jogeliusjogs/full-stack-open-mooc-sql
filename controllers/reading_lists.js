@@ -17,8 +17,6 @@ router.post('/', async (req, res) => {
 router.put('/:id', tokenExtractor, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id)
   const readListItem = await ReadingList.findByPk(req.params.id)
-  console.log(user.id)
-  console.log(readListItem)
   if (user.id == readListItem.userId && req.read) {
     readListItem.isRead = true
     await readListItem.save()
