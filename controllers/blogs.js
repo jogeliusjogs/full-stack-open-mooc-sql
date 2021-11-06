@@ -90,4 +90,4 @@ router.put('/:id', blogFinder, async (req, res) => {
   }
 })
 
-module.exports = router
+module.exports = { router, tokenExtractor }

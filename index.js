@@ -5,16 +5,18 @@ const { PORT } = require('./util/config')
 const { connectToDatabase } = require('./util/db')
 const { ValidationError } = require('sequelize')
 
-const blogsRouter = require('./controllers/blogs')
+const { router } = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const authorsRouter = require('./controllers/authors')
+const readingListsRouter = require('./controllers/reading_lists')
 
 app.use(express.json())
-app.use('/api/blogs', blogsRouter)
+app.use('/api/blogs', router)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/authors', authorsRouter)
+app.use('/api/readinglists', readingListsRouter)
 
 const errorHandler = (err, _req, res, next) => {
   if (err instanceof ValidationError) {
