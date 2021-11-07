@@ -16,3 +16,5 @@ INSERT INTO users (username, name, created_at, updated_at) VALUES ('randomguy@fa
 
 INSERT INTO blogs (author, url, title, likes, year, user_id, created_at, updated_at) VALUES ('Alex Papadimoulis', 'https://thedailywtf.com/', 'The Daily WTF', 1000, 2004, 1, NOW(), NOW());
 INSERT INTO blogs (author, url, title, likes, year, user_id, created_at, updated_at) VALUES ('Jeff Atwood', 'https://blog.codinghorror.com/', 'Coding Horror', 500, 2004, 2, NOW(), NOW());
+INSERT INTO blogs (author, url, title, likes, year, user_id, created_at, updated_at) VALUES ('Guy Blog', 'https://blogurl.com/', 'Not so interesting blog', 5, 1995, 2, NOW(), NOW());
+INSERT INTO blogs (author, url, title, likes, year, user_id, created_at, updated_at) VALUES ('Guy Blog', 'https://anotherblogurl.com/', 'Mildly interesting blog', 600, 2001, 2, NOW(), NOW());

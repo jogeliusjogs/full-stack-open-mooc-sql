@@ -1,7 +1,7 @@
 const router = require('express').Router()
 
 const { User, Blog, ReadingList } = require('../models')
-const { tokenExtractor } = require('./blogs')
+const { enabledUserExtractor } = require('./blogs')
 
 router.post('/', async (req, res) => {
   const user = await User.findByPk(req.body.user_id)
@@ -14,8 +14,8 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.put('/:id', tokenExtractor, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id)
+router.put('/:id', enabledUserExtractor, async (req, res) => {
+  const user = req.user
   const readListItem = await ReadingList.findByPk(req.params.id)
   if (user.id == readListItem.userId && req.read) {
     readListItem.isRead = true

@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../util/config')
-const { Blog, User } = require('../models')
+const { Blog, User, UserSession } = require('../models')
 const { Op } = require('sequelize')
 
 const blogFinder = async (req, res, next) => {
@@ -9,12 +9,27 @@ const blogFinder = async (req, res, next) => {
   next()
 }
 
-const tokenExtractor = (req, res, next) => {
+const enabledUserExtractor = async (req, res, next) => {
   const authorization = req.get('authorization')
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
-      console.log(authorization.substring(7))
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+      const encodedToken = authorization.substring(7)
+      console.log(encodedToken)
+      const decodedToken = jwt.verify(authorization.substring(7), SECRET)
+      const user = await User.findByPk(decodedToken.id)
+      if (user.disabled == true) {
+        return res.status(401).json({error: 'user account disabled'})
+      } 
+      const userSession = await UserSession.findOne({
+        where: {
+          token: encodedToken
+        }
+      })
+      if (userSession && userSession.userId == user.id) {
+        req.user = user
+      } else {
+        return res.status(401).json({error: 'token for user invalidated'})
+      }
     } catch (error){
       console.log(error)
       return res.status(401).json({ error: 'token invalid' })
@@ -57,8 +72,8 @@ router.get('/', async (req, res) => {
   res.json(blogs)
 })
 
-router.post('/', tokenExtractor, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id)
+router.post('/', enabledUserExtractor, async (req, res) => {
+  const user = req.user
   if (req.body.year > new Date().getFullYear()) {
     res.status(400).json({error: 'can not give year parameter higher than current year'})
   }
@@ -66,8 +81,8 @@ router.post('/', tokenExtractor, async (req, res) => {
   return res.json(blog)
 })
 
-router.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id)
+router.delete('/:id', enabledUserExtractor, blogFinder, async (req, res) => {
+  const user = req.user
   if (req.blog) {
     if (req.blog.userId == user.id) {
       await req.blog.destroy()
@@ -90,4 +105,4 @@ router.put('/:id', blogFinder, async (req, res) => {
   }
 })
 
-module.exports = { router, tokenExtractor }
+module.exports = { router, enabledUserExtractor }
